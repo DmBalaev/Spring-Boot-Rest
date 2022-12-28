@@ -1,6 +1,6 @@
 package com.dm.rest.controllers;
 
-import com.dm.rest.persistance.entity.Account;
+import com.dm.rest.persistance.entity.AccountEntity;
 import com.dm.rest.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,23 +19,23 @@ public class AccountControllerRest {
     }
 
     @GetMapping("/{login}")
-    public Account getAccount(@PathVariable("login") String login){
+    public AccountEntity getAccount(@PathVariable("login") String login){
         return accountService.getAccountByLogin(login);
     }
 
     @GetMapping()
-    public List<Account> getAllAccounts(){
+    public List<AccountEntity> getAllAccounts(){
         return accountService.getAllAccount();
     }
 
     @PostMapping
-    public Account addAccount(@RequestBody Account account){
-        return accountService.createAccount(account);
+    public AccountEntity addAccount(@RequestBody AccountEntity accountEntity){
+        return accountService.createAccount(accountEntity);
     }
 
     @PutMapping
-    public Account updateAccount(@RequestBody Account account){
-        return accountService.updateAccount(account);
+    public AccountEntity updateAccount(@RequestBody AccountEntity accountEntity){
+        return accountService.updateAccount(accountEntity);
     }
 
     @DeleteMapping("/{login}")

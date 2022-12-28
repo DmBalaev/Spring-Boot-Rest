@@ -5,15 +5,19 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import java.util.List;
+import java.util.Set;
+
 @Entity
-public class Account {
+public class AccountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String login;
     private String password;
+    private Set<RoleEntity> roles;
 
-    public Account() {
+    public AccountEntity() {
     }
 
     public Long getId() {

@@ -1,18 +1,18 @@
 package com.dm.rest.service;
 
-import com.dm.rest.persistance.entity.Account;
+import com.dm.rest.persistance.entity.AccountEntity;
 
 import java.util.List;
 
 public interface AccountService {
 
-    Account createAccount(Account account);
+    AccountEntity createAccount(AccountEntity accountEntity);
 
-    Account getAccountByLogin(String login);
+    AccountEntity getAccountByLogin(String login);
 
-    List<Account> getAllAccount();
+    List<AccountEntity> getAllAccount();
 
-    Account updateAccount(Account account);
+    AccountEntity updateAccount(AccountEntity accountEntity);
 
     void deleteAccount(String name);
 }
