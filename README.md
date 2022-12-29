@@ -3,15 +3,24 @@ ___
 
 
 ### Steps to Setup
- - Clone the repository
+1. Clone the repository
 
-       git clone https://github.com/DmBalaev/Spring-Boot-Rest.git
+       $ git clone https://github.com/DmBalaev/Spring-Boot-Rest.git
 
- - Run the app using maven
+2. Go to the project folder
 
-       mvn spring-boot:run
+       $ cd spring-boot-jwt
+
+3. Install dependencies
+
+       $ mvn install
+
+3. Start the project
+
+       $ mvn spring-boot:run
 
 ___
+
 
 ### SpringDoc(Swagger)
 After starting the application will be available:
