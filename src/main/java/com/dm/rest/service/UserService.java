@@ -1,27 +1,31 @@
 package com.dm.rest.service;
 
-import com.dm.rest.dto.UserDTO;
 import com.dm.rest.payload.response.ApiResponse;
+import com.dm.rest.payload.response.UserInfo;
 import com.dm.rest.persistance.entity.User;
 import com.dm.rest.security.CustomUserDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 
 public interface UserService {
 
-    public User createUser(UserDTO userDTO, CustomUserDetails principal);
+    public User createUser(User user);
 
-    UserDTO getUserByName(String name);
+    User getUser(String username);
 
-    List<UserDTO> getAllUsers();
+    List<User> getAllUsers();
 
-    ApiResponse changePassword(String name, CustomUserDetails principal);
+    ApiResponse updateUser(String username, User updateUser, CustomUserDetails principal);
 
-    ApiResponse deleteUser(String name, CustomUserDetails principal);
+    ApiResponse deleteUser(String username, CustomUserDetails principal);
 
-    ApiResponse giveAdmin(String name);
+    ApiResponse giveAdmin(String username, CustomUserDetails currentUser);
 
-    ApiResponse takeAdmin(String name);
+    ApiResponse takeAdmin(String username, CustomUserDetails currentUser);
 
-    UserDTO getCurrentUser(CustomUserDetails currentUser);
+    ApiResponse setDefaultRole(String username);
+
+    UserInfo getCurrentUser(CustomUserDetails currentUser);
+    void getAdminRoleInit(String username);
 }

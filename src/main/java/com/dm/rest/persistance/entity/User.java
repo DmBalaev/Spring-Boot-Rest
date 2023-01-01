@@ -13,6 +13,9 @@ public class User {
     private Long id;
     private String login;
     private String password;
+    private String firstname;
+    private String lastname;
+    private String email;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_role",
@@ -23,15 +26,12 @@ public class User {
     public User() {
     }
 
-    public User(String login, String password, Collection<Role> roles) {
+    public User(String login, String firstname, String lastname, String email, String password) {
         this.login = login;
         this.password = password;
-        this.roles = roles;
-    }
-
-    public User(String login, String password) {
-        this.login = login;
-        this.password = password;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
     }
 
     public Long getId() {
@@ -66,6 +66,30 @@ public class User {
         this.roles = roles;
     }
 
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -76,6 +100,9 @@ public class User {
         if (!Objects.equals(id, user.id)) return false;
         if (!Objects.equals(login, user.login)) return false;
         if (!Objects.equals(password, user.password)) return false;
+        if (!Objects.equals(firstname, user.firstname)) return false;
+        if (!Objects.equals(lastname, user.lastname)) return false;
+        if (!Objects.equals(email, user.email)) return false;
         return Objects.equals(roles, user.roles);
     }
 
@@ -84,6 +111,9 @@ public class User {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (login != null ? login.hashCode() : 0);
         result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (firstname != null ? firstname.hashCode() : 0);
+        result = 31 * result + (lastname != null ? lastname.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (roles != null ? roles.hashCode() : 0);
         return result;
     }

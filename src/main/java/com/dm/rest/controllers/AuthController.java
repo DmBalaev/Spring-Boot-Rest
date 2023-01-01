@@ -1,10 +1,9 @@
 package com.dm.rest.controllers;
 
-import com.dm.rest.payload.response.ApiResponse;
-import com.dm.rest.payload.response.JwtAuthenticationResponse;
 import com.dm.rest.payload.requests.LoginRequest;
 import com.dm.rest.payload.requests.RegistrationRequest;
-import com.dm.rest.persistance.entity.User;
+import com.dm.rest.payload.response.ApiResponse;
+import com.dm.rest.payload.response.JwtAuthenticationResponse;
 import com.dm.rest.service.impl.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +26,14 @@ public class AuthController {
 
     @PostMapping("/singin")
     public ResponseEntity<JwtAuthenticationResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        String token = authService.signin(loginRequest.getName(), loginRequest.getPassword());
+        String token = authService.signin(loginRequest.getLogin(), loginRequest.getPassword());
 
         return new ResponseEntity<>(new JwtAuthenticationResponse(token), HttpStatus.OK);
     }
 
     @PostMapping("/singup")
     public ResponseEntity<ApiResponse> registrationUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
-        authService.signup(new User(registrationRequest.getName(), registrationRequest.getPassword()));
+        authService.signup(registrationRequest.getUser());
 
         return new ResponseEntity<>(new ApiResponse("User registered successfully"), HttpStatus.OK);
     }

@@ -35,9 +35,7 @@ public class JwtTokenProvider {
     public String generateToken(String username, Collection<Role> roles){
 
         Claims claims = Jwts.claims().setSubject(username);
-        claims.put("auth", roles.stream()
-                .map(s -> new SimpleGrantedAuthority(s.getRole()))
-                .collect(Collectors.toList()));
+        claims.put("auth", roles);
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpiration);

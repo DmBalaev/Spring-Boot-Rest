@@ -1,15 +1,14 @@
 package com.dm.rest.service.impl;
 
-import com.dm.rest.dto.UserDTO;
 import com.dm.rest.exceptions.ApiException;
 import com.dm.rest.exceptions.UserNotFoundException;
 import com.dm.rest.payload.response.ApiResponse;
+import com.dm.rest.payload.response.UserInfo;
 import com.dm.rest.persistance.entity.Role;
 import com.dm.rest.persistance.entity.User;
 import com.dm.rest.persistance.repository.UserRepository;
 import com.dm.rest.security.CustomUserDetails;
 import com.dm.rest.service.UserService;
-import com.dm.rest.util.UserConvector;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,54 +25,53 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleService roleService;
-    private final UserConvector userConvector;
     private final PasswordEncoder encoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleService roleService, UserConvector userConvector, PasswordEncoder encoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleService roleService, PasswordEncoder encoder) {
         this.userRepository = userRepository;
         this.roleService = roleService;
-        this.userConvector = userConvector;
         this.encoder = encoder;
     }
 
     @Override
-    public User createUser(UserDTO userDTO, CustomUserDetails principal) {
-        if (userRepository.existsByLogin(userDTO.getLogin())){
+    public User createUser(User user) {
+        if (userRepository.existsByLogin(user.getLogin())){
             throw new ApiException("Username is already taken.", HttpStatus.BAD_REQUEST);
         }
-        User user = userConvector.convertEntity(userDTO);
-        user.setRoles(roleService.getDefaultRole());
-        user.setPassword(encoder.encode(userDTO.getPassword()));
 
-        log.info("'{}', created user with name'{}'", principal, userDTO.getLogin());
+        user.setRoles(roleService.getDefaultRole());
+        user.setPassword(encoder.encode(user.getPassword()));
+
+        log.info("created user with name'{}'", user.getLogin());
         return userRepository.save(user);
     }
 
     @Override
-    public UserDTO getUserByName(String username) {
-        User user = getUser(username);
-
-        return userConvector.convertToDto(user);
-    }
-
-    @Override
-    public List<UserDTO> getAllUsers() {
+    public List<User> getAllUsers() {
         List<User> users = userRepository.findAll();
-        return userConvector.convertAllEntity(users);
+        return userRepository.findAll();
     }
 
     @Override
-    public ApiResponse changePassword(String username, CustomUserDetails principal) {
+    public ApiResponse updateUser(String username, User newUser, CustomUserDetails principal) {
         User user = getUser(username);
 
-        if (notCurrentUser(user, principal) || notAdmin(principal)){
+        if (notCurrentUser(user, principal)){
             ApiResponse response = new ApiResponse
-                    ("You don't have permission to change password profile of: " + username);
+                    ("You don't have permission to update info profile of: " + newUser.getLogin());
             throw new AccessDeniedException(response.getMessage());
         }
+        user.setFirstname(newUser.getFirstname());
+        user.setLastname(newUser.getLastname());
+        user.setPassword(newUser.getPassword());
+
+        log.info("Update user: {} -> {}, {} -> {}, password(NoInfo) -> password(NoInfo)",
+                user.getFirstname(), newUser.getFirstname(),
+                user.getLastname(), newUser.getLastname());
+
         userRepository.save(user);
-        return new ApiResponse("You successfully deleted");
+        return new ApiResponse("You successfully update info");
     }
 
     @Override
@@ -91,36 +89,71 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponse giveAdmin(String username) {
+    public ApiResponse giveAdmin(String username, CustomUserDetails currentUser) {
+        if (notAdmin(currentUser)){
+            throw new ApiException("You don't have permission" + currentUser.getAuthorities() , HttpStatus.FORBIDDEN);
+        }
+
         User user = getUser(username);
         Collection<Role> adminRole = roleService.getAdminRole();
         user.setRoles(adminRole);
         userRepository.save(user);
 
+        log.info("Administrator rights are given to the user '{}'", username);
+
         return new ApiResponse("You gave ADMIN role to user: " + username);
     }
 
     @Override
-    public ApiResponse takeAdmin(String username) {
+    public ApiResponse takeAdmin(String username, CustomUserDetails currentUser) {
+        if (notAdmin(currentUser)){
+            throw new ApiException("You don't have permission", HttpStatus.FORBIDDEN);
+        }
+
         User user = getUser(username);
         Collection<Role> defaultRole = roleService.getDefaultRole();
         user.setRoles(defaultRole);
+
+        log.info("Admin rights removed from user '{}'", username);
 
         userRepository.save(user);
         return new ApiResponse("You took ADMIN role from user: " + username);
     }
 
     @Override
-    public UserDTO getCurrentUser(CustomUserDetails currentUser){
-        UserDTO dto = new UserDTO();
-        dto.setId(currentUser.getId());
-        dto.setLogin(currentUser.getUsername());
-        return dto;
+    public ApiResponse setDefaultRole(String username) {
+        User user = getUser(username);
+        Collection<Role> userRole = roleService.getDefaultRole();
+        user.setRoles(userRole);
+        userRepository.save(user);
+
+        log.info("{} -> set default role", username);
+
+        return new ApiResponse("You gave DEFAULT role to user: " + username);
     }
 
-    private User getUser(String username){
+    @Override
+    public UserInfo getCurrentUser(CustomUserDetails currentUser){
+        return new UserInfo(
+                currentUser.getId(),
+                currentUser.getLogin(),
+                currentUser.getFirstName(),
+                currentUser.getLastName(),
+                currentUser.getEmail());
+    }
+
+    @Override
+    public User getUser(String username){
         return userRepository.findByLogin(username)
                 .orElseThrow(()-> new UserNotFoundException("User witn name '" + username + "' not found."));
+    }
+
+    public void getAdminRoleInit(String username){
+        User user = getUser(username);
+        Collection<Role> adminRole = roleService.getAdminRole();
+        user.setRoles(adminRole);
+        userRepository.save(user);
+
     }
 
     private boolean notAdmin(CustomUserDetails principal){
