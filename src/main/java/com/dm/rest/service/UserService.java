@@ -16,13 +16,13 @@ public interface UserService {
 
     List<User> getAllUsers();
 
-    ApiResponse updateUser(String username, User updateUser, CustomUserDetails principal);
+    ApiResponse updateUser(String username, User updateUser);
 
-    ApiResponse deleteUser(String username, CustomUserDetails principal);
+    ApiResponse deleteUser(String username);
 
-    ApiResponse giveAdmin(String username, CustomUserDetails currentUser);
+    ApiResponse giveAdmin(String username);
 
-    ApiResponse takeAdmin(String username, CustomUserDetails currentUser);
+    ApiResponse takeAdmin(String username);
 
     ApiResponse setDefaultRole(String username);
 

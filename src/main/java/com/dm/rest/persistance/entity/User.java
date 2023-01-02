@@ -26,14 +26,6 @@ public class User {
     public User() {
     }
 
-    public User(String login, String firstname, String lastname, String email, String password) {
-        this.login = login;
-        this.password = password;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.email = email;
-    }
-
     public Long getId() {
         return id;
     }

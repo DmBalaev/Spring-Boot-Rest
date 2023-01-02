@@ -36,5 +36,4 @@ public class RestControllerExceptionHandler {
         log.error(e.getMessage(), e);
         return new ResponseEntity<>(new ApiResponse(e.getMessage()), HttpStatus.FORBIDDEN);
     }
-
 }

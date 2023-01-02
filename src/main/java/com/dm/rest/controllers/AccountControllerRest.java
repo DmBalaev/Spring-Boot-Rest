@@ -7,14 +7,12 @@ import com.dm.rest.payload.response.UserInfo;
 import com.dm.rest.persistance.entity.User;
 import com.dm.rest.security.CustomUserDetails;
 import com.dm.rest.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,38 +43,34 @@ public class AccountControllerRest {
     }
 
     @DeleteMapping("/{username}")
-    //@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> deleteUser(@PathVariable(value = "username") String username,
-                                                  @AuthenticationPrincipal CustomUserDetails principal) {
-        ApiResponse apiResponse = userService.deleteUser(username, principal);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable(value = "username") String username) {
+        ApiResponse apiResponse = userService.deleteUser(username);
 
         return new ResponseEntity< >(apiResponse, HttpStatus.OK);
     }
 
     @PutMapping("/{username}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or #username == authentication.principal.username")
     public ResponseEntity<ApiResponse> updateUser(@PathVariable(value = "username") String username,
-                                                  @RequestBody UpdateInfoRequest update,
-                                                  @AuthenticationPrincipal CustomUserDetails principal) {
-        ApiResponse apiResponse = userService.updateUser(username, update.getUser(), principal);
+                                                  @RequestBody UpdateInfoRequest update) {
+        ApiResponse apiResponse = userService.updateUser(username, update.getUser());
 
         return new ResponseEntity< >(apiResponse, HttpStatus.OK);
     }
 
     @PutMapping("/{username}/giveAdmin")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> giveAdmin(@PathVariable(name = "username") String username,
-                                                 @AuthenticationPrincipal CustomUserDetails currentUser) {
-        ApiResponse apiResponse = userService.giveAdmin(username, currentUser);
+    public ResponseEntity<ApiResponse> giveAdmin(@PathVariable(name = "username") String username) {
+        ApiResponse apiResponse = userService.giveAdmin(username);
 
         return new ResponseEntity< >(apiResponse, HttpStatus.OK);
     }
 
     @PutMapping("/{username}/takeAdmin")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> takeAdmin(@PathVariable(name = "username") String username,
-                                                 @AuthenticationPrincipal CustomUserDetails currentUser) {
-        ApiResponse apiResponse = userService.takeAdmin(username, currentUser);
+    public ResponseEntity<ApiResponse> takeAdmin(@PathVariable(name = "username") String username) {
+        ApiResponse apiResponse = userService.takeAdmin(username);
 
         return new ResponseEntity< >(apiResponse, HttpStatus.OK);
     }

@@ -28,8 +28,8 @@ public class DataLoader {
     @Bean
     public CommandLineRunner dataLoad(RoleRepository roleRepository, UserRepository userRepository, UserService userService){
         return args -> {
-            roleRepository.saveAndFlush(new Role("ROLE_ADMIN"));
-            roleRepository.saveAndFlush(new Role("ROLE_USER"));
+            roleRepository.save(new Role("ROLE_ADMIN"));
+            roleRepository.save(new Role("ROLE_USER"));
 
             log.info("Created USER and ADMIN roles");
 

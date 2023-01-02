@@ -54,14 +54,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponse updateUser(String username, User newUser, CustomUserDetails principal) {
+    public ApiResponse updateUser(String username, User newUser) {
         User user = getUser(username);
 
-        if (notCurrentUser(user, principal)){
-            ApiResponse response = new ApiResponse
-                    ("You don't have permission to update info profile of: " + newUser.getLogin());
-            throw new AccessDeniedException(response.getMessage());
-        }
         user.setFirstname(newUser.getFirstname());
         user.setLastname(newUser.getLastname());
         user.setPassword(newUser.getPassword());
@@ -75,25 +70,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponse deleteUser(String username, CustomUserDetails principal) {
+    public ApiResponse deleteUser(String username) {
         User user = getUser(username);
 
-        if (notCurrentUser(user, principal) || notAdmin(principal)){
-            ApiResponse response = new ApiResponse
-                    ("You don't have permission to delete profile of: " + username);
-            throw new AccessDeniedException(response.getMessage());
-        }
         userRepository.delete(user);
-        log.info("'{}', delete user with name'{}'", principal, username);
+        log.info("delete user with name'{}'",  username);
         return new ApiResponse("You successfully deleted profile of: " + username);
     }
 
     @Override
-    public ApiResponse giveAdmin(String username, CustomUserDetails currentUser) {
-        if (notAdmin(currentUser)){
-            throw new ApiException("You don't have permission" + currentUser.getAuthorities() , HttpStatus.FORBIDDEN);
-        }
-
+    public ApiResponse giveAdmin(String username) {
         User user = getUser(username);
         Collection<Role> adminRole = roleService.getAdminRole();
         user.setRoles(adminRole);
@@ -105,11 +91,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponse takeAdmin(String username, CustomUserDetails currentUser) {
-        if (notAdmin(currentUser)){
-            throw new ApiException("You don't have permission", HttpStatus.FORBIDDEN);
-        }
-
+    public ApiResponse takeAdmin(String username) {
         User user = getUser(username);
         Collection<Role> defaultRole = roleService.getDefaultRole();
         user.setRoles(defaultRole);
