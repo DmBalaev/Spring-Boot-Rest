@@ -21,12 +21,4 @@ public class UpdateInfoRequest {
     @Size(min = 6, max = 20)
     private String password;
 
-    public User getUser(){
-        User  user = new User();
-        user.setFirstname(firstName);
-        user.setLastname(lasName);
-        user.setPassword(password);
-
-        return user;
-    }
 }

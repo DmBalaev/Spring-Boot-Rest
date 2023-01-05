@@ -1,5 +1,7 @@
 package com.dm.rest.service;
 
+import com.dm.rest.payload.requests.RegistrationRequest;
+import com.dm.rest.payload.requests.UpdateInfoRequest;
 import com.dm.rest.payload.response.ApiResponse;
 import com.dm.rest.payload.response.UserInfo;
 import com.dm.rest.persistance.entity.User;
@@ -10,13 +12,13 @@ import java.util.List;
 
 public interface UserService {
 
-    public User createUser(User user);
+    public User createUser(RegistrationRequest request);
 
     User getUser(String username);
 
     List<User> getAllUsers();
 
-    ApiResponse updateUser(String username, User updateUser);
+    ApiResponse updateUser(String username, UpdateInfoRequest request);
 
     ApiResponse deleteUser(String username);
 

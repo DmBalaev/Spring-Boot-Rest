@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: password
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      dll-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: h2
+    database-platform: org.hibernate.dialect.H2Dialect
+
+security:
+  jwt:
+    secretKey: secret
+    expiration: 36000000
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+default:
+  admin:
+    password: admin
+    mail: admin@gmail.com

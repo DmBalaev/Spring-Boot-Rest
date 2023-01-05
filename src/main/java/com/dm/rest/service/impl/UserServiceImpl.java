@@ -2,6 +2,8 @@ package com.dm.rest.service.impl;
 
 import com.dm.rest.exceptions.ApiException;
 import com.dm.rest.exceptions.UserNotFoundException;
+import com.dm.rest.payload.requests.RegistrationRequest;
+import com.dm.rest.payload.requests.UpdateInfoRequest;
 import com.dm.rest.payload.response.ApiResponse;
 import com.dm.rest.payload.response.UserInfo;
 import com.dm.rest.persistance.entity.Role;
@@ -9,10 +11,9 @@ import com.dm.rest.persistance.entity.User;
 import com.dm.rest.persistance.repository.UserRepository;
 import com.dm.rest.security.CustomUserDetails;
 import com.dm.rest.service.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,28 +23,28 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleService roleService;
-    private final PasswordEncoder encoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleService roleService, PasswordEncoder encoder) {
-        this.userRepository = userRepository;
-        this.roleService = roleService;
-        this.encoder = encoder;
-    }
+
 
     @Override
-    public User createUser(User user) {
-        if (userRepository.existsByLogin(user.getLogin())){
+    public User createUser(RegistrationRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())){
             throw new ApiException("Username is already taken.", HttpStatus.BAD_REQUEST);
         }
+        User user = User.builder()
+                .firstname(request.getFirstname())
+                .lastname(request.getLastname())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .roles(roleService.getDefaultRole())
+                .build();
 
-        user.setRoles(roleService.getDefaultRole());
-        user.setPassword(encoder.encode(user.getPassword()));
-
-        log.info("created user with name'{}'", user.getLogin());
+        log.info("created user with name'{}'", user.getEmail());
         return userRepository.save(user);
     }
 
@@ -54,16 +55,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponse updateUser(String username, User newUser) {
+    public ApiResponse updateUser(String username, UpdateInfoRequest request) {
         User user = getUser(username);
 
-        user.setFirstname(newUser.getFirstname());
-        user.setLastname(newUser.getLastname());
-        user.setPassword(newUser.getPassword());
+        user.setFirstname(request.getFirstName());
+        user.setLastname(request.getLasName());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        log.info("Update user: {} -> {}, {} -> {}, password(NoInfo) -> password(NoInfo)",
-                user.getFirstname(), newUser.getFirstname(),
-                user.getLastname(), newUser.getLastname());
+        log.info("Update user with email: {}", user.getEmail());
 
         userRepository.save(user);
         return new ApiResponse("You successfully update info");
@@ -125,9 +124,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUser(String username){
-        return userRepository.findByLogin(username)
-                .orElseThrow(()-> new UserNotFoundException("User witn name '" + username + "' not found."));
+    public User getUser(String email){
+        return userRepository.findByEmail(email)
+                .orElseThrow(()-> new UserNotFoundException("User witn email '" + email + "' not found."));
     }
 
     public void getAdminRoleInit(String username){

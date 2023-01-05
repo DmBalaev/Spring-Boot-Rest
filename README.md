@@ -1,4 +1,4 @@
-# Spring-Boot-Rest
+# Spring-Boot-Rest-Task-Manager
 ___
 
 
@@ -18,6 +18,8 @@ ___
 3. Start the project
 
        $ mvn spring-boot:run
+
+The application will be available at http://localhost:8080
 
 ___
 

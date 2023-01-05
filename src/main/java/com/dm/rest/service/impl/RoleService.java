@@ -3,6 +3,7 @@ package com.dm.rest.service.impl;
 import com.dm.rest.exceptions.ApiException;
 import com.dm.rest.persistance.entity.Role;
 import com.dm.rest.persistance.repository.RoleRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -12,13 +13,9 @@ import java.util.Collection;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class RoleService {
     private final RoleRepository roleRepository;
-
-    @Autowired
-    public RoleService(RoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
-    }
 
     public Collection<Role> getDefaultRole(){
         Role role = userRole();

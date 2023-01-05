@@ -36,10 +36,8 @@ public class AccountControllerRest {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> addAccount(@Valid @RequestBody RegistrationRequest registrationRequest){
-
-        User newUser = userService.createUser(registrationRequest.getUser());
-        return new ResponseEntity<>(newUser, HttpStatus.OK);
+    public ResponseEntity<User> addAccount(@Valid @RequestBody RegistrationRequest request){
+        return ResponseEntity.ok(userService.createUser(request));
     }
 
     @DeleteMapping("/{username}")
@@ -54,7 +52,7 @@ public class AccountControllerRest {
     @PreAuthorize("hasRole('ADMIN') or #username == authentication.principal.username")
     public ResponseEntity<ApiResponse> updateUser(@PathVariable(value = "username") String username,
                                                   @RequestBody UpdateInfoRequest update) {
-        ApiResponse apiResponse = userService.updateUser(username, update.getUser());
+        ApiResponse apiResponse = userService.updateUser(username, update);
 
         return new ResponseEntity< >(apiResponse, HttpStatus.OK);
     }

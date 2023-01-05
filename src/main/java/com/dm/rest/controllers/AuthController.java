@@ -1,9 +1,9 @@
 package com.dm.rest.controllers;
 
-import com.dm.rest.payload.requests.LoginRequest;
+import com.dm.rest.payload.requests.AuthenticationRequest;
 import com.dm.rest.payload.requests.RegistrationRequest;
 import com.dm.rest.payload.response.ApiResponse;
-import com.dm.rest.payload.response.JwtAuthenticationResponse;
+import com.dm.rest.payload.response.AuthenticationResponse;
 import com.dm.rest.service.impl.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
     private final AuthService authService;
 
@@ -25,16 +25,12 @@ public class AuthController {
     }
 
     @PostMapping("/singin")
-    public ResponseEntity<JwtAuthenticationResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        String token = authService.signin(loginRequest.getLogin(), loginRequest.getPassword());
-
-        return new ResponseEntity<>(new JwtAuthenticationResponse(token), HttpStatus.OK);
+    public ResponseEntity<AuthenticationResponse> authenticateUser(@Valid @RequestBody AuthenticationRequest request) {
+        return ResponseEntity.ok(authService.signin(request));
     }
 
     @PostMapping("/singup")
-    public ResponseEntity<ApiResponse> registrationUser(@Valid @RequestBody RegistrationRequest registrationRequest) {
-        authService.signup(registrationRequest.getUser());
-
-        return new ResponseEntity<>(new ApiResponse("User registered successfully"), HttpStatus.OK);
+    public ResponseEntity<AuthenticationResponse> registrationUser(@Valid @RequestBody RegistrationRequest request) {
+        return ResponseEntity.ok(authService.signup(request));
     }
 }

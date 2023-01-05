@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .and()
                 .httpBasic(Customizer.withDefaults())
                 .authorizeHttpRequests()
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/v1/auth/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtTokenConfig(jwtTokenProvider))
