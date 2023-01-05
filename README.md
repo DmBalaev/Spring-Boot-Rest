@@ -1,8 +1,15 @@
 # Spring-Boot-Rest-Task-Manager
 ___
 
+## Technologies
+* Spring Boot 3.0
+* Spring Security
+* JSON Web Tokens (JWT)
+* BCrypt
+* Maven
+___
 
-### Steps to Setup
+## Steps to Setup
 1. Clone the repository
 
        $ git clone https://github.com/DmBalaev/Spring-Boot-Rest.git
@@ -24,7 +31,7 @@ The application will be available at http://localhost:8080
 ___
 
 
-### SpringDoc(Swagger)
+## SpringDoc(Swagger)
 After starting the application will be available:
 
 - Swagger UI: http://localhost:8080/swagger-ui/index.html
