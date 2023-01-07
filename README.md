@@ -7,7 +7,7 @@ ___
 * JSON Web Tokens (JWT)
 * BCrypt
 * Maven
-* JDK 19
+* JDK 19.
 ___
 
 ## Steps to Setup
