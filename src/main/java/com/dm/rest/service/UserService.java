@@ -18,7 +18,7 @@ public interface UserService {
 
     List<User> getAllUsers();
 
-    ApiResponse updateUser(String username, UpdateInfoRequest request);
+    ApiResponse updateUser(UpdateInfoRequest request);
 
     ApiResponse deleteUser(String username);
 

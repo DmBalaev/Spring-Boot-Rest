@@ -15,7 +15,7 @@ public interface TaskService {
 
     Task findById(Long taskId);
 
-    Task updateTask(TaskUpdateRequest request, CustomUserDetails principal);
+    Task updateTask(TaskUpdateRequest request);
 
     ApiResponse deleteTask(Long id);
 
@@ -29,7 +29,7 @@ public interface TaskService {
 
     ApiResponse setTaskNotCompleted(Long id);
 
-    ApiResponse assignTaskToUser(Long taskId, Long userId, CustomUserDetails principal);
+    ApiResponse assignTaskToUser(Long taskId, Long userId);
 
     ApiResponse unassignTask(Long taskId);
 

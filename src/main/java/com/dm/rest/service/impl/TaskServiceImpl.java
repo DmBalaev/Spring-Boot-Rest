@@ -43,7 +43,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task updateTask(TaskUpdateRequest request, CustomUserDetails principal) {
+    public Task updateTask(TaskUpdateRequest request) {
         Task task = taskRepository.findById(request.getId())
                 .orElseThrow(()-> new ApiException("Not found task", HttpStatus.INTERNAL_SERVER_ERROR));
         task.setName(request.getName());
@@ -96,10 +96,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public ApiResponse assignTaskToUser(Long taskId, Long userId, CustomUserDetails principal) {
-        if (!principal.getId().equals(userId) || !principal.getAuthorities().contains(new Role("ROLE_ADMIN"))){
-            throw new ApiException("You don't have permissions", HttpStatus.FORBIDDEN);
-        }
+    public ApiResponse assignTaskToUser(Long taskId, Long userId) {
         Task task = findById(taskId);
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new UserNotFoundException("User witn id '" + userId + "' not found."));

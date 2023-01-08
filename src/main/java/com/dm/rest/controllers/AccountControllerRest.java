@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/accounts")
+@RequestMapping("/api/v1/accounts")
 public class AccountControllerRest {
 
     private final UserService userService;
@@ -50,9 +50,8 @@ public class AccountControllerRest {
 
     @PutMapping("/{username}")
     @PreAuthorize("hasRole('ADMIN') or #username == authentication.principal.username")
-    public ResponseEntity<ApiResponse> updateUser(@PathVariable(value = "username") String username,
-                                                  @RequestBody UpdateInfoRequest update) {
-        ApiResponse apiResponse = userService.updateUser(username, update);
+    public ResponseEntity<ApiResponse> updateUser(@RequestBody UpdateInfoRequest update) {
+        ApiResponse apiResponse = userService.updateUser(update);
 
         return new ResponseEntity< >(apiResponse, HttpStatus.OK);
     }

@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 @Data
 @AllArgsConstructor
 public class UpdateInfoRequest {
+    private String email;
     @NotBlank
     @Size(max = 30)
     private String firstName;

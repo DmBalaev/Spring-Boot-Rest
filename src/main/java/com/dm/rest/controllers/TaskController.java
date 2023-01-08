@@ -21,7 +21,6 @@ import java.util.List;
 @RequestMapping("/api/v1/tasks")
 public class TaskController {
     private final TaskService taskService;
-    private final UserService userService;
 
     @GetMapping("")
     @PreAuthorize("hasRole('ADMIN')")
@@ -48,16 +47,15 @@ public class TaskController {
 
     @PutMapping("/edit")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Task> updateTask(@Valid TaskUpdateRequest request,
-                             @AuthenticationPrincipal CustomUserDetails currentUser) {
-        return ResponseEntity.ok(taskService.updateTask(request,currentUser));
+    public ResponseEntity<Task> updateTask(@Valid TaskUpdateRequest request) {
+        return ResponseEntity.ok(taskService.updateTask(request));
     }
 
     @PutMapping("/{taskId}/assign/{userId}")
+    @PreAuthorize("hasRole('ADMIN') or #username == authentication.principal.username")
     public ResponseEntity<ApiResponse> assignUser(@PathVariable Long taskId,
-                                                  @PathVariable Long userId,
-                                                  @AuthenticationPrincipal CustomUserDetails currentUser){
-        ApiResponse response = taskService.assignTaskToUser(taskId, userId, currentUser);
+                                                  @PathVariable Long userId){
+        ApiResponse response = taskService.assignTaskToUser(taskId, userId);
         return ResponseEntity.ok(response);
     }
 

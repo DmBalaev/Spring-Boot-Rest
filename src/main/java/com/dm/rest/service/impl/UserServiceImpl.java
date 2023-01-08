@@ -55,8 +55,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponse updateUser(String username, UpdateInfoRequest request) {
-        User user = getUser(username);
+    public ApiResponse updateUser(UpdateInfoRequest request) {
+        User user = getUser(request.getEmail());
 
         user.setFirstname(request.getFirstName());
         user.setLastname(request.getLasName());
