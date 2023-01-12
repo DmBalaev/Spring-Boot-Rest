@@ -6,7 +6,6 @@ import com.dm.rest.payload.response.ApiResponse;
 import com.dm.rest.payload.response.UserInfo;
 import com.dm.rest.persistance.entity.User;
 import com.dm.rest.security.CustomUserDetails;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 

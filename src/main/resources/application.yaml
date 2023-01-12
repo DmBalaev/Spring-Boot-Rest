@@ -25,5 +25,5 @@ springdoc:
 
 default:
   admin:
-    password: admin
+    password: adminpassword
     mail: admin@gmail.com

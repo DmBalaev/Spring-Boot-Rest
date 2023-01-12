@@ -5,7 +5,6 @@ import com.dm.rest.exceptions.UserNotFoundException;
 import com.dm.rest.payload.requests.TaskRequest;
 import com.dm.rest.payload.requests.TaskUpdateRequest;
 import com.dm.rest.payload.response.ApiResponse;
-import com.dm.rest.persistance.entity.Role;
 import com.dm.rest.persistance.entity.Task;
 import com.dm.rest.persistance.entity.User;
 import com.dm.rest.persistance.repository.TaskRepository;
@@ -44,8 +43,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Task updateTask(TaskUpdateRequest request) {
-        Task task = taskRepository.findById(request.getId())
-                .orElseThrow(()-> new ApiException("Not found task", HttpStatus.INTERNAL_SERVER_ERROR));
+        Task task = findById(request.getId());
         task.setName(request.getName());
         task.setDescription(request.getDescription());
 

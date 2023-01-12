@@ -7,7 +7,9 @@ import com.dm.rest.payload.response.UserInfo;
 import com.dm.rest.persistance.entity.User;
 import com.dm.rest.security.CustomUserDetails;
 import com.dm.rest.service.UserService;
+import com.dm.rest.util.UserConvector;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,26 +20,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/accounts")
 public class AccountControllerRest {
-
     private final UserService userService;
+    private final UserConvector convector;
 
-    @Autowired
-    public AccountControllerRest(UserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping()
     @PreAuthorize("hasRole('ADMIN')")
-    public List<User> getAllAccounts(){
-        return userService.getAllUsers();
+    public List<UserInfo> getAllAccounts(){
+        return convector.convertAllToDto(userService.getAllUsers());
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> addAccount(@Valid @RequestBody RegistrationRequest request){
-        return ResponseEntity.ok(userService.createUser(request));
+    public ResponseEntity<UserInfo> addAccount(@Valid @RequestBody RegistrationRequest request){
+        return ResponseEntity.ok(convector.convertToDto(userService.createUser(request)));
     }
 
     @DeleteMapping("/{username}")

@@ -11,6 +11,7 @@ import com.dm.rest.persistance.entity.User;
 import com.dm.rest.persistance.repository.UserRepository;
 import com.dm.rest.security.CustomUserDetails;
 import com.dm.rest.service.UserService;
+import com.dm.rest.util.UserConvector;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,8 +29,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
-
-
 
     @Override
     public User createUser(RegistrationRequest request) {
@@ -69,12 +68,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponse deleteUser(String username) {
-        User user = getUser(username);
+    public ApiResponse deleteUser(String email) {
+        User user = getUser(email);
 
         userRepository.delete(user);
-        log.info("delete user with name'{}'",  username);
-        return new ApiResponse("You successfully deleted profile of: " + username);
+        log.info("delete user with name'{}'",  email);
+        return new ApiResponse("You successfully deleted profile of: " + email);
     }
 
     @Override
@@ -117,7 +116,6 @@ public class UserServiceImpl implements UserService {
     public UserInfo getCurrentUser(CustomUserDetails currentUser){
         return new UserInfo(
                 currentUser.getId(),
-                currentUser.getLogin(),
                 currentUser.getFirstName(),
                 currentUser.getLastName(),
                 currentUser.getEmail());

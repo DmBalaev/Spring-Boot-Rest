@@ -4,7 +4,6 @@ import com.dm.rest.payload.requests.TaskRequest;
 import com.dm.rest.payload.requests.TaskUpdateRequest;
 import com.dm.rest.payload.response.ApiResponse;
 import com.dm.rest.persistance.entity.Task;
-import com.dm.rest.persistance.entity.User;
 import com.dm.rest.security.CustomUserDetails;
 
 import java.util.List;
@@ -32,6 +31,5 @@ public interface TaskService {
     ApiResponse assignTaskToUser(Long taskId, Long userId);
 
     ApiResponse unassignTask(Long taskId);
-
 
 }
