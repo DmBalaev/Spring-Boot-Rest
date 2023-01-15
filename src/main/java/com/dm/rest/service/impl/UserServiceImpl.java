@@ -11,7 +11,6 @@ import com.dm.rest.persistance.entity.User;
 import com.dm.rest.persistance.repository.UserRepository;
 import com.dm.rest.security.CustomUserDetails;
 import com.dm.rest.service.UserService;
-import com.dm.rest.util.UserConvector;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -49,13 +48,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllUsers() {
-        List<User> users = userRepository.findAll();
         return userRepository.findAll();
     }
 
     @Override
-    public ApiResponse updateUser(UpdateInfoRequest request) {
-        User user = getUser(request.getEmail());
+    public User updateUser(UpdateInfoRequest request, String username) {
+        User user = getUserByName(username);
 
         user.setFirstname(request.getFirstName());
         user.setLastname(request.getLasName());
@@ -63,13 +61,13 @@ public class UserServiceImpl implements UserService {
 
         log.info("Update user with email: {}", user.getEmail());
 
-        userRepository.save(user);
-        return new ApiResponse("You successfully update info");
+        return userRepository.save(user);
+
     }
 
     @Override
     public ApiResponse deleteUser(String email) {
-        User user = getUser(email);
+        User user = getUserByName(email);
 
         userRepository.delete(user);
         log.info("delete user with name'{}'",  email);
@@ -78,7 +76,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ApiResponse giveAdmin(String username) {
-        User user = getUser(username);
+        User user = getUserByName(username);
         Collection<Role> adminRole = roleService.getAdminRole();
         user.setRoles(adminRole);
         userRepository.save(user);
@@ -90,7 +88,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ApiResponse takeAdmin(String username) {
-        User user = getUser(username);
+        User user = getUserByName(username);
         Collection<Role> defaultRole = roleService.getDefaultRole();
         user.setRoles(defaultRole);
 
@@ -98,18 +96,6 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
         return new ApiResponse("You took ADMIN role from user: " + username);
-    }
-
-    @Override
-    public ApiResponse setDefaultRole(String username) {
-        User user = getUser(username);
-        Collection<Role> userRole = roleService.getDefaultRole();
-        user.setRoles(userRole);
-        userRepository.save(user);
-
-        log.info("{} -> set default role", username);
-
-        return new ApiResponse("You gave DEFAULT role to user: " + username);
     }
 
     @Override
@@ -122,17 +108,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUser(String email){
+    public User getUserByName(String email){
         return userRepository.findByEmail(email)
                 .orElseThrow(()-> new UserNotFoundException("User witn email '" + email + "' not found."));
-    }
-
-    public void getAdminRoleInit(String username){
-        User user = getUser(username);
-        Collection<Role> adminRole = roleService.getAdminRole();
-        user.setRoles(adminRole);
-        userRepository.save(user);
-
     }
 
     private boolean notAdmin(CustomUserDetails principal){

@@ -13,11 +13,11 @@ public interface UserService {
 
     public User createUser(RegistrationRequest request);
 
-    User getUser(String username);
+    User getUserByName(String username);
 
     List<User> getAllUsers();
 
-    ApiResponse updateUser(UpdateInfoRequest request);
+    User updateUser(UpdateInfoRequest request, String email);
 
     ApiResponse deleteUser(String username);
 
@@ -25,8 +25,6 @@ public interface UserService {
 
     ApiResponse takeAdmin(String username);
 
-    ApiResponse setDefaultRole(String username);
-
     UserInfo getCurrentUser(CustomUserDetails currentUser);
-    void getAdminRoleInit(String username);
+
 }

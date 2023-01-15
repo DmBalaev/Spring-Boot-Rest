@@ -13,14 +13,10 @@ import java.util.Collection;
 public class CustomUserDetails implements UserDetails {
     private static final long serialVersionUID = 1L;
     private Long id;
-    private String login;
     @JsonIgnore
     private String password;
-
     private String firstName;
-
     private String lastName;
-
     @JsonIgnore
     private String email;
 

@@ -47,12 +47,13 @@ public class AccountControllerRest {
         return new ResponseEntity< >(apiResponse, HttpStatus.OK);
     }
 
-    @PutMapping("/{username}")
-    @PreAuthorize("hasRole('ADMIN') or #username == authentication.principal.username")
-    public ResponseEntity<ApiResponse> updateUser(@RequestBody UpdateInfoRequest update) {
-        ApiResponse apiResponse = userService.updateUser(update);
+    @PutMapping("/{email}")
+    @PreAuthorize("hasRole('ADMIN') or #email == authentication.principal.username")
+    public ResponseEntity<UserInfo> updateUser(@RequestBody UpdateInfoRequest update,
+                                               @PathVariable String username) {
+        UserInfo info = convector.convertToDto(userService.updateUser(update, username));
 
-        return new ResponseEntity< >(apiResponse, HttpStatus.OK);
+        return new ResponseEntity< >(info, HttpStatus.OK);
     }
 
     @PutMapping("/{username}/giveAdmin")

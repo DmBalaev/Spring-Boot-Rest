@@ -1,10 +1,11 @@
 package com.dm.rest.payload.requests;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
+@Builder
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Data
 public class TaskRequest {
     @NotBlank
