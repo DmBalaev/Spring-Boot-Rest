@@ -171,9 +171,10 @@ class TaskServiceImplTest {
     }
 
     @Test
-    void updateStatus_withoutPrivileges() {
+    void updateStatus_NotTaskOwner_AndNotAdmin() {
         User user = mock(User.class);
-        Task task = new Task();
+        Task task = Task.builder()
+                .build();
         CustomUserDetails userDetails = CustomUserDetails.builder()
                 .authorities(List.of(new Role("ROLE_USER")))
                 .build();
@@ -191,11 +192,11 @@ class TaskServiceImplTest {
     }
 
     @Test
-    void updateStatus_withUserPrivileges() {
+    void updateStatus_TaskOwner_AndNotAdmin() {
         User user = mock(User.class);
         Task task = Task.builder()
                 .owner(user)
-                .taskStatus(TaskStatus.NEW)
+                .taskStatus(TaskStatus.ASSIGNED)
                 .build();
         CustomUserDetails userDetails = CustomUserDetails.builder()
                 .id(1L)
@@ -204,6 +205,7 @@ class TaskServiceImplTest {
 
         when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
         when(userRepository.findById(userDetails.getId())).thenReturn(Optional.of(user));
+        when(taskRepository.findAll()).thenReturn(List.of(task));
 
         taskService.updateStatus(task.getId(), TaskStatus.COMPLETED, userDetails);
         assertEquals(task.getTaskStatus(), TaskStatus.COMPLETED);
@@ -211,7 +213,7 @@ class TaskServiceImplTest {
     }
 
     @Test
-    void updateStatus_withAdminPrivileges() {
+    void updateStatus_NotTaskOwner_Admin() {
         Task task = Task.builder()
                 .taskStatus(TaskStatus.NEW)
                 .build();

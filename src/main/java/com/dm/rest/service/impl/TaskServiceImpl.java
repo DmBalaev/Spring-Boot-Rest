@@ -104,12 +104,15 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public ApiResponse updateStatus(Long taskId, TaskStatus status, CustomUserDetails principal) {
         Task task = findById(taskId);
-
-        if (isNotAdmin(principal)&&
+        if (isNotAdmin(principal) && !isOwner(principal, task)){
+            throw new ApiException("This is not your task or not have permission", HttpStatus.FORBIDDEN);
+        }
+        if (isNotAdmin(principal) &&
                 isOwner(principal, task) &&
-                isNotAllowedStatusForUser(status)){
-             throw new ApiException("Tis is not your task or not permission", HttpStatus.FORBIDDEN);
-         }
+                status != TaskStatus.COMPLETED){
+            throw new ApiException("You don't have permission", HttpStatus.FORBIDDEN);
+        }
+
         task.setTaskStatus(status);
         taskRepository.save(task);
         return new ApiResponse("You successfully change task status");
@@ -122,13 +125,6 @@ public class TaskServiceImpl implements TaskService {
     private  boolean isNotAdmin(CustomUserDetails principal) {
         return principal.getAuthorities().stream()
                 .noneMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
-    }
-
-    private  boolean isNotAllowedStatusForUser(TaskStatus status) {
-        return status.name().equals("NEW") ||
-                status.name().equals("ASSIGNED") ||
-                status.name().equals("REVISION") ||
-                status.name().equals("CLOSE");
     }
 
 }

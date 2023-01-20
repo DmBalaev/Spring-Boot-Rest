@@ -36,7 +36,7 @@ public class TaskControllerRest {
         return convector.convertAllToDto(taskService.findFreeTask());
     }
 
-    @GetMapping("/{userId}/")
+    @GetMapping("/{userId}")
     public List<TaskResponse> tasksOwnedUser(@PathVariable Long userId){
         return convector.convertAllToDto(taskService.findTasksByUser(userId));
     }

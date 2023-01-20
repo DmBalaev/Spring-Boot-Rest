@@ -1,5 +1,7 @@
 package com.dm.rest.persistance.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,10 +22,13 @@ public class Task {
     private String name;
     private String description;
     private LocalDateTime date;
+    private boolean isCompleted;
     @Enumerated(EnumType.STRING)
+    @JsonProperty(value = "taskStatus")
     private TaskStatus taskStatus;
     private String creatorName;
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "owner_id")
     private User owner;
 }
