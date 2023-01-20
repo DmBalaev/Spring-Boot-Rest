@@ -12,4 +12,6 @@ public class TaskRequest {
     private String name;
     @NotBlank
     private String description;
+
+    private Long expirationTimeMs;
 }

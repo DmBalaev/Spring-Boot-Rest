@@ -37,12 +37,13 @@ class TaskServiceImplTest {
         TaskRequest request = TaskRequest.builder()
                 .name("name")
                 .description("description")
+                .expirationTimeMs(1000000L)
                 .build();
         CustomUserDetails principal = mock(CustomUserDetails.class);
         Task task = Task.builder()
                 .name("name")
                 .description("description")
-                .date(LocalDateTime.now())
+                .expirationTime(LocalDateTime.now())
                 .creatorName(principal.getEmail())
                 .build();
 

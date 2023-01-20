@@ -30,7 +30,7 @@ public class TaskServiceImpl implements TaskService {
         Task task = Task.builder()
                 .name(request.getName())
                 .description(request.getDescription())
-                .date(LocalDateTime.now())
+                .expirationTime(LocalDateTime.now().plusSeconds(request.getExpirationTimeMs()))
                 .creatorName(principal.getEmail())
                 .taskStatus(TaskStatus.NEW)
                 .build();

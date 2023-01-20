@@ -21,8 +21,7 @@ public class Task {
     private Long id;
     private String name;
     private String description;
-    private LocalDateTime date;
-    private boolean isCompleted;
+    private LocalDateTime expirationTime;
     @Enumerated(EnumType.STRING)
     @JsonProperty(value = "taskStatus")
     private TaskStatus taskStatus;
