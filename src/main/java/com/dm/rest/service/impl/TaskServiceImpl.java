@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -66,18 +65,14 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> findFreeTask() {
-        return taskRepository.findAll().stream()
-                .filter(task -> task.getOwner() == null && task.getTaskStatus().equals(TaskStatus.NEW))
-                .toList();
+        return taskRepository.findByOwnerIsNullAndTaskStatus(TaskStatus.NEW);
     }
 
     @Override
     public List<Task> findTasksByUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new UserNotFoundException("User witn id '" + userId + "' not found."));
-        return findAll().stream()
-                .filter(task -> Objects.nonNull(task.getOwner()) && task.getOwner().equals(user))
-                .toList();
+        return taskRepository.findByOwner_Id(user.getId());
     }
 
     @Override

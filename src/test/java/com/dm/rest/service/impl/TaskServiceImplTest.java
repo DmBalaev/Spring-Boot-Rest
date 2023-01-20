@@ -106,39 +106,33 @@ class TaskServiceImplTest {
 
     @Test
     void findFreeTask() {
-        Task t1 = Task.builder()
-                .owner(mock(User.class))
-                .build();
         Task t2 = Task.builder()
                 .taskStatus(TaskStatus.NEW)
                 .build();
-        List<Task> allTask = List.of(t1, t2);
-        when(taskRepository.findAll()).thenReturn(allTask);
+        List<Task> freeTask = List.of(t2);
+        when(taskRepository.findByOwnerIsNullAndTaskStatus(TaskStatus.NEW)).thenReturn(freeTask);
 
        List<Task> expected = taskService.findFreeTask();
 
        assertEquals(expected.size(), 1);
-       verify(taskRepository).findAll();
+       verify(taskRepository).findByOwnerIsNullAndTaskStatus(TaskStatus.NEW);
     }
 
     @Test
     void findTasksByUser() {
         User user = mock(User.class);
-        User user2 = mock(User.class);
         Task t1 = Task.builder()
                 .owner(user)
                 .build();
-        Task t2 = Task.builder()
-                .owner(user2)
-                .build();
-        List<Task> allTask = List.of(t1, t2);
+
+        List<Task> ownedTasks = List.of(t1);
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-        when(taskRepository.findAll()).thenReturn(allTask);
+        when(taskRepository.findByOwner_Id(user.getId())).thenReturn(ownedTasks);
 
         List<Task> expected = taskService.findTasksByUser(user.getId());
 
         assertEquals(expected.size(), 1);
-        verify(taskRepository).findAll();
+        verify(taskRepository).findByOwner_Id(user.getId());
     }
 
     @Test
@@ -205,7 +199,7 @@ class TaskServiceImplTest {
 
         when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
         when(userRepository.findById(userDetails.getId())).thenReturn(Optional.of(user));
-        when(taskRepository.findAll()).thenReturn(List.of(task));
+        when(taskRepository.findByOwner_Id(user.getId())).thenReturn(List.of(task));
 
         taskService.updateStatus(task.getId(), TaskStatus.COMPLETED, userDetails);
         assertEquals(task.getTaskStatus(), TaskStatus.COMPLETED);
