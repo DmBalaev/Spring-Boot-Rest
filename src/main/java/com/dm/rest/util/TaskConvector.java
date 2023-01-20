@@ -16,7 +16,7 @@ public class TaskConvector {
     private final ModelMapper mapper;
 
     public TaskResponse convertToDto(Task task){
-        return mapper.map(Task.class, TaskResponse.class);
+        return mapper.map(task, TaskResponse.class);
     }
 
     public List<TaskResponse> convertAllToDto(Collection<Task> tasks){
