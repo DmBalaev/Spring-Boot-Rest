@@ -1,6 +1,6 @@
 package com.dm.rest.payload.response;
 
-import com.dm.rest.persistance.entity.User;
+import com.dm.rest.persistance.entity.TaskStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +15,7 @@ public class TaskResponse {
     private String name;
     private String description;
     private LocalDateTime date;
-    private boolean isCompleted;
+    private TaskStatus taskStatus;
     private String creatorName;
-    private User owner;
+    private UserInfo owner;
 }
