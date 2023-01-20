@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,7 +20,8 @@ public class Task {
     private String name;
     private String description;
     private LocalDateTime date;
-    private boolean isCompleted;
+    @Enumerated(EnumType.STRING)
+    private TaskStatus taskStatus;
     private String creatorName;
     @ManyToOne
     @JoinColumn(name = "owner_id")

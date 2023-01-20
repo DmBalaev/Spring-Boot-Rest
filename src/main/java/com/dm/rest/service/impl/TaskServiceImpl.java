@@ -6,6 +6,7 @@ import com.dm.rest.payload.requests.TaskRequest;
 import com.dm.rest.payload.requests.TaskUpdateRequest;
 import com.dm.rest.payload.response.ApiResponse;
 import com.dm.rest.persistance.entity.Task;
+import com.dm.rest.persistance.entity.TaskStatus;
 import com.dm.rest.persistance.entity.User;
 import com.dm.rest.persistance.repository.TaskRepository;
 import com.dm.rest.persistance.repository.UserRepository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +33,7 @@ public class TaskServiceImpl implements TaskService {
                 .description(request.getDescription())
                 .date(LocalDateTime.now())
                 .creatorName(principal.getEmail())
+                .taskStatus(TaskStatus.NEW)
                 .build();
         return taskRepository.save(task);
     }
@@ -64,7 +67,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<Task> findFreeTask() {
         return taskRepository.findAll().stream()
-                .filter(task -> task.getOwner() == null && !task.isCompleted())
+                .filter(task -> task.getOwner() == null && task.getTaskStatus().equals(TaskStatus.NEW))
                 .toList();
     }
 
@@ -73,24 +76,8 @@ public class TaskServiceImpl implements TaskService {
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new UserNotFoundException("User witn id '" + userId + "' not found."));
         return findAll().stream()
-                .filter(task -> task.getOwner().equals(user))
+                .filter(task -> Objects.nonNull(task.getOwner()) && task.getOwner().equals(user))
                 .toList();
-    }
-
-    @Override
-    public ApiResponse setTaskCompleted(Long id) {
-        Task task = findById(id);
-        task.setCompleted(true);
-        taskRepository.save(task);
-        return new ApiResponse("You successfully set completed task");
-    }
-
-    @Override
-    public ApiResponse setTaskNotCompleted(Long id) {
-        Task task = findById(id);
-        task.setCompleted(false);
-        taskRepository.save(task);
-        return new ApiResponse("You successfully set not completed task");
     }
 
     @Override
@@ -100,6 +87,7 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(()-> new UserNotFoundException("User witn id '" + userId + "' not found."));
 
         task.setOwner(user);
+        task.setTaskStatus(TaskStatus.ASSIGNED);
         taskRepository.save(task);
 
         return new ApiResponse("You successfully assign task");
@@ -112,4 +100,35 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.save(task);
         return new ApiResponse("You successfully unassign task");
     }
+
+    @Override
+    public ApiResponse updateStatus(Long taskId, TaskStatus status, CustomUserDetails principal) {
+        Task task = findById(taskId);
+
+        if (isNotAdmin(principal)&&
+                isOwner(principal, task) &&
+                isNotAllowedStatusForUser(status)){
+             throw new ApiException("Tis is not your task or not permission", HttpStatus.FORBIDDEN);
+         }
+        task.setTaskStatus(status);
+        taskRepository.save(task);
+        return new ApiResponse("You successfully change task status");
+    }
+
+    private boolean isOwner(CustomUserDetails principal, Task task) {
+        return findTasksByUser(principal.getId()).contains(task);
+    }
+
+    private  boolean isNotAdmin(CustomUserDetails principal) {
+        return principal.getAuthorities().stream()
+                .noneMatch(r -> r.getAuthority().equals("ROLE_ADMIN"));
+    }
+
+    private  boolean isNotAllowedStatusForUser(TaskStatus status) {
+        return status.name().equals("NEW") ||
+                status.name().equals("ASSIGNED") ||
+                status.name().equals("REVISION") ||
+                status.name().equals("CLOSE");
+    }
+
 }

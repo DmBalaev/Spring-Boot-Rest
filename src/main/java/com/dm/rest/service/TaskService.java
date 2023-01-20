@@ -8,7 +8,7 @@ import com.dm.rest.security.CustomUserDetails;
 
 import java.util.List;
 
-public interface TaskService {
+public interface TaskService extends TaskUpdateOperation<ApiResponse> {
 
     Task createTask(TaskRequest request, CustomUserDetails principal);
 
@@ -23,10 +23,6 @@ public interface TaskService {
     List<Task> findFreeTask();
 
     List<Task> findTasksByUser(Long id);
-
-    ApiResponse setTaskCompleted(Long id);
-
-    ApiResponse setTaskNotCompleted(Long id);
 
     ApiResponse assignTaskToUser(Long taskId, Long userId);
 

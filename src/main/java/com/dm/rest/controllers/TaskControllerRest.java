@@ -4,10 +4,11 @@ import com.dm.rest.payload.requests.TaskRequest;
 import com.dm.rest.payload.requests.TaskUpdateRequest;
 import com.dm.rest.payload.response.ApiResponse;
 import com.dm.rest.payload.response.TaskResponse;
-import com.dm.rest.persistance.entity.Task;
+import com.dm.rest.persistance.entity.TaskStatus;
 import com.dm.rest.security.CustomUserDetails;
 import com.dm.rest.service.TaskService;
 import com.dm.rest.util.TaskConvector;
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class TaskControllerRest {
     private final TaskService taskService;
     private final TaskConvector convector;
 
-    @GetMapping("")
+    @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public List<TaskResponse> allTasks(){
         return convector.convertAllToDto(taskService.findAll());
@@ -42,14 +43,14 @@ public class TaskControllerRest {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<TaskResponse> createTask(@Valid TaskRequest request,
+    public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskRequest request,
                                            @AuthenticationPrincipal CustomUserDetails currentUser) {
         return ResponseEntity.ok(convector.convertToDto(taskService.createTask(request, currentUser)));
     }
 
     @PutMapping("/edit")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<TaskResponse> updateTask(@Valid TaskUpdateRequest request) {
+    public ResponseEntity<TaskResponse> updateTask(@Valid @RequestBody TaskUpdateRequest request) {
         return ResponseEntity.ok(convector.convertToDto(taskService.updateTask(request)));
     }
 
@@ -68,15 +69,12 @@ public class TaskControllerRest {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{taskId}/done")
-    public ResponseEntity<ApiResponse> setDone(@PathVariable Long taskId){
-        ApiResponse response = taskService.setTaskCompleted(taskId);
-        return ResponseEntity.ok(response);
-    }
-
-    @PutMapping("/{taskId}/not_done")
-    public ResponseEntity<ApiResponse> unsetDone(@PathVariable Long taskId){
-        ApiResponse response = taskService.setTaskNotCompleted(taskId);
+    @PutMapping("/{taskId}/change_status")
+    public ResponseEntity<ApiResponse> changeStatus(@PathVariable Long taskId,
+                                                    @AuthenticationPrincipal CustomUserDetails principal,
+                                                    @RequestBody JsonNode json){
+        TaskStatus status = TaskStatus.valueOf(json.get("taskStatus").asText());
+        ApiResponse response = taskService.updateStatus(taskId, status, principal);
         return ResponseEntity.ok(response);
     }
 

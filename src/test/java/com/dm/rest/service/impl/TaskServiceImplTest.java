@@ -1,13 +1,15 @@
 package com.dm.rest.service.impl;
 
+import com.dm.rest.exceptions.ApiException;
 import com.dm.rest.payload.requests.TaskRequest;
 import com.dm.rest.payload.requests.TaskUpdateRequest;
+import com.dm.rest.persistance.entity.Role;
 import com.dm.rest.persistance.entity.Task;
+import com.dm.rest.persistance.entity.TaskStatus;
 import com.dm.rest.persistance.entity.User;
 import com.dm.rest.persistance.repository.TaskRepository;
 import com.dm.rest.persistance.repository.UserRepository;
 import com.dm.rest.security.CustomUserDetails;
-import jakarta.validation.constraints.NotBlank;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -106,9 +108,10 @@ class TaskServiceImplTest {
     void findFreeTask() {
         Task t1 = Task.builder()
                 .owner(mock(User.class))
-                .isCompleted(true)
                 .build();
-        Task t2 = new Task();
+        Task t2 = Task.builder()
+                .taskStatus(TaskStatus.NEW)
+                .build();
         List<Task> allTask = List.of(t1, t2);
         when(taskRepository.findAll()).thenReturn(allTask);
 
@@ -139,36 +142,6 @@ class TaskServiceImplTest {
     }
 
     @Test
-    void setTaskCompleted() {
-        Task task = Task.builder()
-                .isCompleted(false)
-                .build();
-
-        when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
-        when(taskRepository.save(task)).thenReturn(task);
-
-        taskService.setTaskCompleted(task.getId());
-
-        assertEquals(task.isCompleted(), true);
-        verify(taskRepository).save(any(Task.class));
-    }
-
-    @Test
-    void setTaskNotCompleted() {
-        Task task = Task.builder()
-                .isCompleted(true)
-                .build();
-
-        when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
-        when(taskRepository.save(task)).thenReturn(task);
-
-        taskService.setTaskNotCompleted(task.getId());
-
-        assertEquals(task.isCompleted(), false);
-        verify(taskRepository).save(any(Task.class));
-    }
-
-    @Test
     void assignTaskToUser() {
         User user = mock(User.class);
         Task task = new Task();
@@ -193,7 +166,65 @@ class TaskServiceImplTest {
 
         taskService.unassignTask(task.getId());
 
-        assertEquals(task.getOwner(), null);
+        assertNull(task.getOwner());
         verify(taskRepository).save(any(Task.class));
+    }
+
+    @Test
+    void updateStatus_withoutPrivileges() {
+        User user = mock(User.class);
+        Task task = new Task();
+        CustomUserDetails userDetails = CustomUserDetails.builder()
+                .authorities(List.of(new Role("ROLE_USER")))
+                .build();
+
+        when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
+        when(userRepository.findById(userDetails.getId())).thenReturn(Optional.of(user));
+
+
+        assertThrows(ApiException.class,
+                ()-> taskService.updateStatus(task.getId(), TaskStatus.CLOSE, userDetails));
+        assertThrows(ApiException.class,
+                ()-> taskService.updateStatus(task.getId(), TaskStatus.REVISION, userDetails));
+        assertThrows(ApiException.class,
+                ()-> taskService.updateStatus(task.getId(), TaskStatus.NEW, userDetails));
+    }
+
+    @Test
+    void updateStatus_withUserPrivileges() {
+        User user = mock(User.class);
+        Task task = Task.builder()
+                .owner(user)
+                .taskStatus(TaskStatus.NEW)
+                .build();
+        CustomUserDetails userDetails = CustomUserDetails.builder()
+                .id(1L)
+                .authorities(List.of(new Role("ROLE_USER")))
+                .build();
+
+        when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
+        when(userRepository.findById(userDetails.getId())).thenReturn(Optional.of(user));
+
+        taskService.updateStatus(task.getId(), TaskStatus.COMPLETED, userDetails);
+        assertEquals(task.getTaskStatus(), TaskStatus.COMPLETED);
+
+    }
+
+    @Test
+    void updateStatus_withAdminPrivileges() {
+        Task task = Task.builder()
+                .taskStatus(TaskStatus.NEW)
+                .build();
+        CustomUserDetails userDetails = CustomUserDetails.builder()
+                .authorities(List.of(new Role("ROLE_ADMIN")))
+                .build();
+
+        when(taskRepository.findById(task.getId())).thenReturn(Optional.of(task));
+
+        taskService.updateStatus(task.getId(), TaskStatus.CLOSE, userDetails);
+        assertEquals(task.getTaskStatus(), TaskStatus.CLOSE);
+
+        taskService.updateStatus(task.getId(), TaskStatus.REVISION, userDetails);
+        assertEquals(task.getTaskStatus(), TaskStatus.REVISION);
     }
 }
