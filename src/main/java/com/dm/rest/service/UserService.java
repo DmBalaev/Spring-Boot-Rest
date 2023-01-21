@@ -2,7 +2,7 @@ package com.dm.rest.service;
 
 import com.dm.rest.payload.requests.RegistrationRequest;
 import com.dm.rest.payload.requests.UpdateInfoRequest;
-import com.dm.rest.payload.response.ApiResponse;
+import com.dm.rest.payload.response.ApplicationResponse;
 import com.dm.rest.payload.response.UserInfo;
 import com.dm.rest.persistance.entity.User;
 import com.dm.rest.security.CustomUserDetails;
@@ -19,11 +19,11 @@ public interface UserService {
 
     User updateUser(UpdateInfoRequest request, String email);
 
-    ApiResponse deleteUser(String username);
+    ApplicationResponse deleteUser(String username);
 
-    ApiResponse giveAdmin(String username);
+    ApplicationResponse giveAdmin(String username);
 
-    ApiResponse takeAdmin(String username);
+    ApplicationResponse takeAdmin(String username);
 
     UserInfo getCurrentUser(CustomUserDetails currentUser);
 

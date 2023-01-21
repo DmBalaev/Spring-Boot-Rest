@@ -2,13 +2,13 @@ package com.dm.rest.service;
 
 import com.dm.rest.payload.requests.TaskRequest;
 import com.dm.rest.payload.requests.TaskUpdateRequest;
-import com.dm.rest.payload.response.ApiResponse;
+import com.dm.rest.payload.response.ApplicationResponse;
 import com.dm.rest.persistance.entity.Task;
 import com.dm.rest.security.CustomUserDetails;
 
 import java.util.List;
 
-public interface TaskService extends TaskUpdateOperation<ApiResponse> {
+public interface TaskService extends TaskUpdateOperation<ApplicationResponse> {
 
     Task createTask(TaskRequest request, CustomUserDetails principal);
 
@@ -16,7 +16,7 @@ public interface TaskService extends TaskUpdateOperation<ApiResponse> {
 
     Task updateTask(TaskUpdateRequest request);
 
-    ApiResponse deleteTask(Long id);
+    ApplicationResponse deleteTask(Long id);
 
     List<Task> findAll();
 
@@ -24,8 +24,8 @@ public interface TaskService extends TaskUpdateOperation<ApiResponse> {
 
     List<Task> findTasksByUser(Long id);
 
-    ApiResponse assignTaskToUser(Long taskId, Long userId);
+    ApplicationResponse assignTaskToUser(Long taskId, Long userId);
 
-    ApiResponse unassignTask(Long taskId);
+    ApplicationResponse unassignTask(Long taskId);
 
 }

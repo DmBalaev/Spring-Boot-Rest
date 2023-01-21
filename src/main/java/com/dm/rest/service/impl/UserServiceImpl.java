@@ -4,7 +4,7 @@ import com.dm.rest.exceptions.ApiException;
 import com.dm.rest.exceptions.UserNotFoundException;
 import com.dm.rest.payload.requests.RegistrationRequest;
 import com.dm.rest.payload.requests.UpdateInfoRequest;
-import com.dm.rest.payload.response.ApiResponse;
+import com.dm.rest.payload.response.ApplicationResponse;
 import com.dm.rest.payload.response.UserInfo;
 import com.dm.rest.persistance.entity.Role;
 import com.dm.rest.persistance.entity.User;
@@ -14,7 +14,6 @@ import com.dm.rest.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -66,16 +65,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponse deleteUser(String email) {
+    public ApplicationResponse deleteUser(String email) {
         User user = getUserByName(email);
 
         userRepository.delete(user);
         log.info("delete user with name'{}'",  email);
-        return new ApiResponse("You successfully deleted profile of: " + email);
+        return new ApplicationResponse("You successfully deleted profile of: " + email);
     }
 
     @Override
-    public ApiResponse giveAdmin(String username) {
+    public ApplicationResponse giveAdmin(String username) {
         User user = getUserByName(username);
         Collection<Role> adminRole = roleService.getAdminRole();
         user.setRoles(adminRole);
@@ -83,11 +82,11 @@ public class UserServiceImpl implements UserService {
 
         log.info("Administrator rights are given to the user '{}'", username);
 
-        return new ApiResponse("You gave ADMIN role to user: " + username);
+        return new ApplicationResponse("You gave ADMIN role to user: " + username);
     }
 
     @Override
-    public ApiResponse takeAdmin(String username) {
+    public ApplicationResponse takeAdmin(String username) {
         User user = getUserByName(username);
         Collection<Role> defaultRole = roleService.getDefaultRole();
         user.setRoles(defaultRole);
@@ -95,7 +94,7 @@ public class UserServiceImpl implements UserService {
         log.info("Admin rights removed from user '{}'", username);
 
         userRepository.save(user);
-        return new ApiResponse("You took ADMIN role from user: " + username);
+        return new ApplicationResponse("You took ADMIN role from user: " + username);
     }
 
     @Override
@@ -111,13 +110,5 @@ public class UserServiceImpl implements UserService {
     public User getUserByName(String email){
         return userRepository.findByEmail(email)
                 .orElseThrow(()-> new UserNotFoundException("User witn email '" + email + "' not found."));
-    }
-
-    private boolean notAdmin(CustomUserDetails principal){
-        return !principal.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
-    }
-
-    private boolean notCurrentUser(User user, CustomUserDetails principal){
-        return !user.getId().equals(principal.getId());
     }
 }

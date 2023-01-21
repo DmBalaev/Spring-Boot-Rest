@@ -4,7 +4,7 @@ import com.dm.rest.exceptions.ApiException;
 import com.dm.rest.exceptions.UserNotFoundException;
 import com.dm.rest.payload.requests.TaskRequest;
 import com.dm.rest.payload.requests.TaskUpdateRequest;
-import com.dm.rest.payload.response.ApiResponse;
+import com.dm.rest.payload.response.ApplicationResponse;
 import com.dm.rest.persistance.entity.Task;
 import com.dm.rest.persistance.entity.TaskStatus;
 import com.dm.rest.persistance.entity.User;
@@ -40,7 +40,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Task findById(Long id) {
         return taskRepository.findById(id)
-                .orElseThrow(()-> new ApiException("Task with id '" + id + "'", HttpStatus.INTERNAL_SERVER_ERROR));
+                .orElseThrow(()-> new ApiException("Task with id '" + id + "'", HttpStatus.NOT_FOUND));
     }
 
     @Override
@@ -53,9 +53,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public ApiResponse deleteTask(Long id) {
+    public ApplicationResponse deleteTask(Long id) {
         taskRepository.deleteById(id);
-        return new ApiResponse("You successfully delete task");
+        return new ApplicationResponse("You successfully delete task");
     }
 
     @Override
@@ -76,7 +76,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public ApiResponse assignTaskToUser(Long taskId, Long userId) {
+    public ApplicationResponse assignTaskToUser(Long taskId, Long userId) {
         Task task = findById(taskId);
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new UserNotFoundException("User witn id '" + userId + "' not found."));
@@ -85,19 +85,19 @@ public class TaskServiceImpl implements TaskService {
         task.setTaskStatus(TaskStatus.ASSIGNED);
         taskRepository.save(task);
 
-        return new ApiResponse("You successfully assign task");
+        return new ApplicationResponse("You successfully assign task");
     }
 
     @Override
-    public ApiResponse unassignTask(Long taskId) {
+    public ApplicationResponse unassignTask(Long taskId) {
         Task task = findById(taskId);
         task.setOwner(null);
         taskRepository.save(task);
-        return new ApiResponse("You successfully unassign task");
+        return new ApplicationResponse("You successfully unassign task");
     }
 
     @Override
-    public ApiResponse updateStatus(Long taskId, TaskStatus status, CustomUserDetails principal) {
+    public ApplicationResponse updateStatus(Long taskId, TaskStatus status, CustomUserDetails principal) {
         Task task = findById(taskId);
         if (isNotAdmin(principal) && !isOwner(principal, task)){
             throw new ApiException("This is not your task or not have permission", HttpStatus.FORBIDDEN);
@@ -110,7 +110,7 @@ public class TaskServiceImpl implements TaskService {
 
         task.setTaskStatus(status);
         taskRepository.save(task);
-        return new ApiResponse("You successfully change task status");
+        return new ApplicationResponse("You successfully change task status");
     }
 
     private boolean isOwner(CustomUserDetails principal, Task task) {

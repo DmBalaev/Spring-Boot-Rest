@@ -14,7 +14,7 @@ public class TaskResponse {
     private Long id;
     private String name;
     private String description;
-    private LocalDateTime date;
+    private LocalDateTime expirationTime;
     private TaskStatus taskStatus;
     private String creatorName;
     private UserInfo owner;

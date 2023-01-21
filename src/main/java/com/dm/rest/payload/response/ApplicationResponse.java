@@ -3,10 +3,10 @@ package com.dm.rest.payload.response;
 import lombok.Data;
 
 @Data
-public class ApiResponse {
+public class ApplicationResponse {
     private String message;
 
-    public ApiResponse(String message) {
+    public ApplicationResponse(String message) {
         this.message = message;
     }
 }
