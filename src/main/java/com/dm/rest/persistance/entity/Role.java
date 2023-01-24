@@ -1,12 +1,9 @@
 package com.dm.rest.persistance.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-
-import java.util.Objects;
 
 @Entity
 @Table(name = "roles")
@@ -14,7 +11,7 @@ import java.util.Objects;
 @NoArgsConstructor
 public class Role implements GrantedAuthority {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String role;
 

@@ -1,18 +1,19 @@
 spring:
+  liquibase:
+    enabled: true
   datasource:
-    url: jdbc:h2:mem:testdb
-    username: sa
-    password: password
-    driver-class-name: org.h2.Driver
-  jpa:
+    url: jdbc:postgresql://localhost:5432/task_db
+    username: admin
+    password: 123
+    driver-class-name: org.postgresql.Driver
     hibernate:
-      dll-auto: create-drop
+      dll-auto: validate
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-    database: h2
-    database-platform: org.hibernate.dialect.H2Dialect
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 security:
   jwt:
@@ -22,8 +23,3 @@ security:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
-
-default:
-  admin:
-    password: adminpassword
-    mail: admin@gmail.com

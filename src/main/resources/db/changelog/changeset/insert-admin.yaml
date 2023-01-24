@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert ADMIN user
+      author: dm
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: email
+                  value: admin@gmail.com
+              - column:
+                  name: password
+                  value: $2y$10$vOBH/4yYuALyRg4OYa4ilOu2chgpNQj8QhzCclOJjirY671Smk6Sm
+
+        - insert:
+            tableName: users_role
+            columns:
+              - column:
+                  name: user_id
+                  value: 1
+              - column:
+                  name: role_id
+                  value: 1
+        - insert:
+            tableName: users_role
+            columns:
+              - column:
+                  name: user_id
+                  value: 1
+              - column:
+                  name: role_id
+                  value: 2
+
+
