@@ -7,27 +7,34 @@ ___
 * JSON Web Tokens (JWT)
 * BCrypt
 * Maven
+* Docker
+* PostgreSql
+* Liquibase
 ___
 
 ## Steps to Setup
 1. Clone the repository
 
-       $ git clone https://github.com/DmBalaev/Spring-Boot-Rest.git
+       git clone https://github.com/DmBalaev/Spring-Boot-Rest.git
 
 2. Go to the project folder
 
-       $ cd spring-boot-jwt
+       cd Spring-Boot-Rest-Task-Manager
 
-3. Install dependencies
+3. Build the maven project
 
-       $ mvn install
+       mvn clean install -DskipTests=true
 
-3. Start the project
+4. Run container
 
-       $ mvn spring-boot:run
+       docker-compose up
+
+All commands should  be run from project root
 
 The application will be available at http://localhost:8080
 
+
+After starting the application, a user was created with the name: admin@gmail.com and password: adminpassword
 ___
 
 
