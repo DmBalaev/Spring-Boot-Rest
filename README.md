@@ -42,3 +42,8 @@ ___
 After starting the application will be available:
 
 - Swagger UI: http://localhost:8080/swagger-ui/index.html
+
+
+## Postman
+
+If you will use Postman, then in the postman folder there is a file import it into postman
