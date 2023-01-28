@@ -90,8 +90,8 @@ public class AccountControllerRest {
     @PutMapping("/{email}")
     @PreAuthorize("hasRole('ADMIN') or #email == authentication.principal.username")
     public ResponseEntity<UserInfo> updateUser(@RequestBody UpdateInfoRequest update,
-                                               @PathVariable String username) {
-        UserInfo info = convector.convertToDto(userService.updateUser(update, username));
+                                               @PathVariable String email) {
+        UserInfo info = convector.convertToDto(userService.updateUser(update, email));
 
         return new ResponseEntity< >(info, HttpStatus.OK);
     }
